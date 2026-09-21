@@ -1,0 +1,5 @@
+Debug 14:00:13: true
+Debug 14:00:13: 0x7ff66b7e3a70
+Warning 14:00:18: QSettings::value: Empty key passed
+Warning 14:00:18: QSettings::setValue: Empty key passed
+Warning 14:00:18: QWindowsWindow::setGeometry: Unable to set geometry 1958x1166+11+45 on QWidgetWindow/'MainWindowWindow'. Resulting geometry:  1924x1050+11+45 (frame: 11, 45, 11, 11, custom margin: 0, 0, 0, 0, minimum size: 569x626, maximum size: 16777215x16777215).

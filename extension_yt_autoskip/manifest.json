@@ -1,0 +1,19 @@
+﻿{
+  "manifest_version": 3,
+  "name": "YouTube Auto Play and Deep Ad Skipper",
+  "version": "2.0",
+  "description": "Automatically plays YouTube videos, dismisses consent dialogs, and skips all advertisements.",
+  "content_scripts": [
+    {
+      "matches": ["*://*.youtube.com/*", "*://*.google.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["*://*.youtube.com/*"],
+      "js": ["main_world.js"],
+      "world": "MAIN",
+      "run_at": "document_start"
+    }
+  ]
+}
