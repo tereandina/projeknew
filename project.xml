@@ -14,7 +14,13 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    }
    var tNum = parseInt(thread_number()) || 1;
 
-   // 1. Baca listnegara.txt untuk info lokasi
+   // 1. Jeda Stagger antar thread saat pertama kali start (Thread 2 jeda 5 detik agar tidak bentrok)
+   if (tNum > 1 && P_THREAD_CYCLE === 0) {
+      log("[Thread " + tNum + "] Menunggu jeda start " + ((tNum - 1) * 5) + " detik agar browser terbuka bergantian...");
+      sleep((tNum - 1) * 5000)!
+   }
+
+   // 2. Baca listnegara.txt untuk info lokasi
    var cFile = "C:/Users/Admin/Documents/PROJWK NEW/listnegara.txt";
    var cRaw = "";
    try { cRaw = native("filesystem", "readfile", JSON.stringify({value: cFile, base64: false, from: 0, to: 0})); } catch(e) {}
@@ -24,7 +30,7 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    }
    VAR_COUNTRY = cList[Math.floor(Math.random() * cList.length)];
 
-   // 2. Baca urls.txt & pilih video bergantian untuk setiap thread
+   // 3. Baca urls.txt & pilih video berbeda untuk tiap thread
    var uFile = "C:/Users/Admin/Documents/PROJWK NEW/urls.txt";
    var uRaw = "";
    try { uRaw = native("filesystem", "readfile", JSON.stringify({value: uFile, base64: false, from: 0, to: 0})); } catch(e) {}
@@ -37,7 +43,7 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    VAR_VIDEO_NUM = videoIdx + 1;
    VAR_TOTAL_VIDEOS = listUrls.length;
 
-   // 3. Durasi tonton & delay
+   // 4. Durasi tonton & jeda antar task dari resource
    RS("duration_min", false, false)!
    var minD = parseInt(_result().get()) || 30;
    RS("duration_max", false, false)!
@@ -48,7 +54,7 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    RS("delay_between", false, false)!
    VAR_DELAY_SEC = parseInt(_result().get()) || 5;
 
-   // 4. Pengaturan Jaringan & Proxy (CARA B vs CARA A)
+   // 5. Pengaturan Jaringan & Proxy (CARA B vs CARA A)
    var pFile = "C:/Users/Admin/Documents/PROJWK NEW/proxies.txt";
    var pRaw = "";
    try { pRaw = native("filesystem", "readfile", JSON.stringify({value: pFile, base64: false, from: 0, to: 0})); } catch(e) {}
@@ -67,23 +73,24 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
       set_proxy(pHost, pPort, true, pUser, pPass)!
       log_success("[Thread " + tNum + "] [CARA B - PROXY AKTIF] Proxy (" + (pIdx + 1) + "/" + pList.length + "): " + pHost + ":" + pPort);
    } else {
-      // PENTING: JANGAN PANGGIL set_proxy JIKA TIDAK ADA PROXY!
-      // Browser akan langsung menggunakan koneksi VPN Surfshark Desktop / Sistem.
       log_success("[Thread " + tNum + "] [CARA A - SURFSHARK DESKTOP] Menggunakan koneksi VPN Surfshark Desktop (Lokasi: " + VAR_COUNTRY + ")");
    }
 
-   // 5. User-Agent
-   RS("user_agents", false, false)!
-   var uaVal = _result().get();
-   if (uaVal && uaVal.toString().trim().length > 0) {
-      header("User-Agent", uaVal.toString().trim())!
+   // 6. User-Agent mandiri tanpa lock resource
+   var uaFile = "C:/Users/Admin/Documents/PROJWK NEW/useragents.txt";
+   var uaRaw = "";
+   try { uaRaw = native("filesystem", "readfile", JSON.stringify({value: uaFile, base64: false, from: 0, to: 0})); } catch(e) {}
+   var uaList = uaRaw.split(/\r?\n/).map(function(l) { return l.trim(); }).filter(function(l) { return l.length > 20; });
+   if (uaList.length > 0) {
+      var uaVal = uaList[(tNum - 1 + P_THREAD_CYCLE) % uaList.length];
+      header("User-Agent", uaVal)!
    }
 
-   // 6. WAJIB: Buka Browser Chromium
+   // 7. Buka Browser Chromium
    browser()!
-   log_success("[Thread " + tNum + "] [OK] Browser Chromium Berhasil Terbuka");
+   log_success("[Thread " + tNum + "] [OK] Browser Chromium #" + tNum + " Berhasil Terbuka");
 
-   // 7. Muat Mesin Otomasi yt_engine.js ke Browser
+   // 8. Muat Mesin Otomasi yt_engine.js ke Browser
    var engineFile = "C:/Users/Admin/Documents/PROJWK NEW/yt_engine.js";
    VAR_ENGINE_CODE = "";
    try { VAR_ENGINE_CODE = native("filesystem", "readfile", JSON.stringify({value: engineFile, base64: false, from: 0, to: 0})); } catch(e) {}
@@ -98,7 +105,7 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    section_start("Buka Video YouTube (Load URL)", 1001)!
    /*Dat:eyJ1dG8iOiIwIiwiZiI6W10sInVtIjoiMCIsInV0IjoiMCIsInMiOiJjdXN0b20iLCJ2IjoxLCJkIjpbeyJjbGFzcyI6InN0cmluZyIsImRhdGEiOiJCdWthIFZpZGVvIFlvdVR1YmUgKExvYWQgVVJMKSIsImlkIjoiQ29kZSIsInR5cGUiOiJjb25zdHIifV0sInV3IjoiMCJ9*/
    log_success("[Thread " + tNum + "] [START] Membuka URL: " + VAR_CURRENT_URL);
-   load(VAR_CURRENT_URL)!
+   _load(VAR_CURRENT_URL, "", true)!
    sleep(3000)!
    log_success("[Thread " + tNum + "] [OK] Halaman YouTube Berhasil Dimuat & Video Berputar");
    section_end()!
@@ -118,9 +125,7 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
          scroll(0, scrollDelta)!
       }
 
-      if (VAR_ELAPSED % 10 === 0 || VAR_ELAPSED >= VAR_TARGET_DUR) {
-         log("[Thread " + tNum + "] Sedang menonton... (" + VAR_ELAPSED + "/" + VAR_TARGET_DUR + " detik)");
-      }
+      log("[Thread " + tNum + "] Sedang menonton... (" + VAR_ELAPSED + "/" + VAR_TARGET_DUR + " detik)");
    }
    log_success("[Thread " + tNum + "] [DONE] Selesai menonton video (" + VAR_TARGET_DUR + " detik)");
    section_end()!
@@ -180,8 +185,8 @@ EnableComponents=true
 AutostartDebug=false
 SaveBrowserLog=false
 ProfilesCaching=true
-MaxBrowserStartSimultaneously=3
-MinFreeMemoryToStartBrowser=300
+MaxBrowserStartSimultaneously=5
+MinFreeMemoryToStartBrowser=100
 MinUnusedCpu=1
 IsMaximized=false
 Restart=true
