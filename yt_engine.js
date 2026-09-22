@@ -133,7 +133,7 @@
         } catch(err) {}
     }
 
-    // Interval 1000ms (1 detik sekali) - sangat ringan untuk prosesor
+    // Interval 1000ms (1 detik sekali) - sangat hemat CPU
     setInterval(processYouTube, 1000);
     processYouTube();
 })();

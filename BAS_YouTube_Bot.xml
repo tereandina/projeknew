@@ -14,19 +14,19 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    }
    var tNum = parseInt(thread_number()) || 1;
 
-   // 1. Jeda Stagger 5 detik antar thread agar pembukaan browser bergantian mulus
+   // 1. Jeda Stagger 5 detik antar thread saat pertama kali start agar pembukaan browser bergantian
    if (tNum > 1 && P_THREAD_CYCLE === 0) {
       log("[Thread " + tNum + "] Menunggu jeda start " + ((tNum - 1) * 5) + " detik agar browser terbuka bergantian...");
       sleep((tNum - 1) * 5000)!
    }
 
-   // 2. Info lokasi VPN Surfshark
+   // 2. Baca listnegara.txt untuk rotasi negara acak
    var cFile = "C:/Users/Admin/Documents/PROJWK NEW/listnegara.txt";
    var cRaw = "";
    try { cRaw = native("filesystem", "readfile", JSON.stringify({value: cFile, base64: false, from: 0, to: 0})); } catch(e) {}
-   var cList = cRaw.split(/\r?\n/).map(function(l) { return l.trim(); }).filter(function(l) { return l.length > 0; });
+   var cList = cRaw.split(/\r?\n/).map(function(l) { return l.trim(); }).filter(function(l) { return l.length > 0 && l.indexOf("#") !== 0; });
    if (cList.length === 0) {
-      cList = ["United States", "United Kingdom", "Germany", "Singapore", "Japan", "Netherlands", "Canada"];
+      cList = ["United States", "United Kingdom", "Germany", "Singapore", "Japan", "Netherlands", "Canada", "Australia", "France", "Switzerland"];
    }
    VAR_COUNTRY = cList[Math.floor(Math.random() * cList.length)];
 
@@ -54,7 +54,7 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    RS("delay_between", false, false)!
    VAR_DELAY_SEC = parseInt(_result().get()) || 5;
 
-   // 5. Pengaturan Jaringan & Proxy (CARA B vs CARA A)
+   // 5. Pengaturan Jaringan: Deteksi Proxy vs VPN Sistem Surfshark
    var pFile = "C:/Users/Admin/Documents/PROJWK NEW/proxies.txt";
    var pRaw = "";
    try { pRaw = native("filesystem", "readfile", JSON.stringify({value: pFile, base64: false, from: 0, to: 0})); } catch(e) {}
@@ -73,14 +73,14 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
       set_proxy(pHost, pPort, true, pUser, pPass)!
       log_success("[Thread " + tNum + "] [CARA B - PROXY AKTIF] Proxy (" + (pIdx + 1) + "/" + pList.length + "): " + pHost + ":" + pPort);
    } else {
-      log_success("[Thread " + tNum + "] [CARA A - SURFSHARK DESKTOP] Menggunakan koneksi VPN Surfshark Desktop (Lokasi: " + VAR_COUNTRY + ")");
+      log_success("[Thread " + tNum + "] [VPN SURFSHARK SISTEM] Terhubung ke VPN (Target Lokasi: " + VAR_COUNTRY + ")");
    }
 
-   // 6. Inisialisasi & Buka Browser Chromium (Langsung tanpa hambatan)
+   // 6. Inisialisasi & Buka Browser Chromium
    browser()!
    log_success("[Thread " + tNum + "] [OK] Browser Chromium #" + tNum + " Berhasil Terbuka");
 
-   // 7. Muat Mesin Otomasi yt_engine.js ke Browser
+   // 7. Pasang Mesin Otomasi yt_engine.js ke Browser
    var engineFile = "C:/Users/Admin/Documents/PROJWK NEW/yt_engine.js";
    VAR_ENGINE_CODE = "";
    try { VAR_ENGINE_CODE = native("filesystem", "readfile", JSON.stringify({value: engineFile, base64: false, from: 0, to: 0})); } catch(e) {}
@@ -154,7 +154,7 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
      <ScriptName>
   </ScriptName>
      <ProtectionStrength>4</ProtectionStrength>
-     <UnusedModules>ThreadSync;String;JSON;ClickCaptcha;Path;PhoneVerification;AI;InMail;URL</UnusedModules>
+     <UnusedModules>InMail;ThreadSync;ClickCaptcha;Path;AI;PhoneVerification;String;URL;JSON</UnusedModules>
      <ScriptIcon>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preview&gt;</ScriptIcon>
      <IsCustomIcon>true</IsCustomIcon>
      <HideBrowsers>false</HideBrowsers>
@@ -243,8 +243,8 @@ Detector=false
      <ModelList>
           <Model>
                <Name>urls</Name>
-               <Description ru="YouTube URL List (.txt)" en="YouTube URL List (.txt)"/>
-               <SectionName ru="1. Target Video" en="1. Target Video"/>
+               <Description en="YouTube URL List (.txt)" ru="YouTube URL List (.txt)"/>
+               <SectionName en="1. Target Video" ru="1. Target Video"/>
                <HintVisible>0</HintVisible>
                <Hint en=""/>
                <VisibilityConditionValue>
@@ -271,8 +271,8 @@ Detector=false
           <Defaults>
                <Default>
                     <Name>urls</Name>
-                    <Description ru="YouTube URL List (.txt)" en="YouTube URL List (.txt)"/>
-                    <SectionName ru="1. Target Video" en="1. Target Video"/>
+                    <Description en="YouTube URL List (.txt)" ru="YouTube URL List (.txt)"/>
+                    <SectionName en="1. Target Video" ru="1. Target Video"/>
                     <HintVisible>0</HintVisible>
                     <Hint en=""/>
                     <VisibilityConditionValue>
@@ -293,8 +293,8 @@ Detector=false
           </Defaults>
           <Model>
                <Name>threads</Name>
-               <Description ru="Concurrent Browsers (Threads)" en="Concurrent Browsers (Threads)"/>
-               <SectionName ru="1. Target Video" en="1. Target Video"/>
+               <Description en="Concurrent Browsers (Threads)" ru="Concurrent Browsers (Threads)"/>
+               <SectionName en="1. Target Video" ru="1. Target Video"/>
                <HintVisible>0</HintVisible>
                <Hint en=""/>
                <VisibilityConditionValue>
@@ -313,8 +313,8 @@ Detector=false
           <Defaults/>
           <Model>
                <Name>vpn_mode</Name>
-               <Description ru="Mode Jaringan &amp; VPN" en="Mode Jaringan &amp; VPN"/>
-               <SectionName ru="2. VPN &amp; Network" en="2. VPN &amp; Network"/>
+               <Description en="Mode Jaringan &amp; VPN" ru="Mode Jaringan &amp; VPN"/>
+               <SectionName en="2. VPN &amp; Network" ru="2. VPN &amp; Network"/>
                <HintVisible>0</HintVisible>
                <Hint en=""/>
                <VisibilityConditionValue>
@@ -335,8 +335,8 @@ Koneksi Langsung (Direct)</Values>
           <Defaults/>
           <Model>
                <Name>proxies</Name>
-               <Description ru="Proxy List (.txt)" en="Proxy List (.txt)"/>
-               <SectionName ru="2. VPN &amp; Network" en="2. VPN &amp; Network"/>
+               <Description en="Proxy List (.txt)" ru="Proxy List (.txt)"/>
+               <SectionName en="2. VPN &amp; Network" ru="2. VPN &amp; Network"/>
                <HintVisible>0</HintVisible>
                <Hint en=""/>
                <VisibilityConditionValue>
@@ -363,8 +363,8 @@ Koneksi Langsung (Direct)</Values>
           <Defaults>
                <Default>
                     <Name>proxies</Name>
-                    <Description ru="Proxy List (.txt)" en="Proxy List (.txt)"/>
-                    <SectionName ru="2. VPN &amp; Network" en="2. VPN &amp; Network"/>
+                    <Description en="Proxy List (.txt)" ru="Proxy List (.txt)"/>
+                    <SectionName en="2. VPN &amp; Network" ru="2. VPN &amp; Network"/>
                     <HintVisible>0</HintVisible>
                     <Hint en=""/>
                     <VisibilityConditionValue>
@@ -385,8 +385,8 @@ Koneksi Langsung (Direct)</Values>
           </Defaults>
           <Model>
                <Name>proxy_type</Name>
-               <Description ru="Proxy Protocol" en="Proxy Protocol"/>
-               <SectionName ru="2. VPN &amp; Network" en="2. VPN &amp; Network"/>
+               <Description en="Proxy Protocol" ru="Proxy Protocol"/>
+               <SectionName en="2. VPN &amp; Network" ru="2. VPN &amp; Network"/>
                <HintVisible>0</HintVisible>
                <Hint en=""/>
                <VisibilityConditionValue>
@@ -406,8 +406,8 @@ socks5</Values>
           <Defaults/>
           <Model>
                <Name>duration_min</Name>
-               <Description ru="Durasi Nonton Minimal (detik)" en="Durasi Nonton Minimal (detik)"/>
-               <SectionName ru="3. Durasi Tonton" en="3. Durasi Tonton"/>
+               <Description en="Durasi Nonton Minimal (detik)" ru="Durasi Nonton Minimal (detik)"/>
+               <SectionName en="3. Durasi Tonton" ru="3. Durasi Tonton"/>
                <HintVisible>0</HintVisible>
                <Hint en=""/>
                <VisibilityConditionValue>
@@ -426,8 +426,8 @@ socks5</Values>
           <Defaults/>
           <Model>
                <Name>duration_max</Name>
-               <Description ru="Durasi Nonton Maksimal (detik)" en="Durasi Nonton Maksimal (detik)"/>
-               <SectionName ru="3. Durasi Tonton" en="3. Durasi Tonton"/>
+               <Description en="Durasi Nonton Maksimal (detik)" ru="Durasi Nonton Maksimal (detik)"/>
+               <SectionName en="3. Durasi Tonton" ru="3. Durasi Tonton"/>
                <HintVisible>0</HintVisible>
                <Hint en=""/>
                <VisibilityConditionValue>
@@ -446,8 +446,8 @@ socks5</Values>
           <Defaults/>
           <Model>
                <Name>user_agents</Name>
-               <Description ru="User-Agent List (.txt)" en="User-Agent List (.txt)"/>
-               <SectionName ru="4. Browser &amp; Privasi" en="4. Browser &amp; Privasi"/>
+               <Description en="User-Agent List (.txt)" ru="User-Agent List (.txt)"/>
+               <SectionName en="4. Browser &amp; Privasi" ru="4. Browser &amp; Privasi"/>
                <HintVisible>0</HintVisible>
                <Hint en=""/>
                <VisibilityConditionValue>
@@ -474,8 +474,8 @@ socks5</Values>
           <Defaults>
                <Default>
                     <Name>user_agents</Name>
-                    <Description ru="User-Agent List (.txt)" en="User-Agent List (.txt)"/>
-                    <SectionName ru="4. Browser &amp; Privasi" en="4. Browser &amp; Privasi"/>
+                    <Description en="User-Agent List (.txt)" ru="User-Agent List (.txt)"/>
+                    <SectionName en="4. Browser &amp; Privasi" ru="4. Browser &amp; Privasi"/>
                     <HintVisible>0</HintVisible>
                     <Hint en=""/>
                     <VisibilityConditionValue>
@@ -496,8 +496,8 @@ socks5</Values>
           </Defaults>
           <Model>
                <Name>auto_skip_ads</Name>
-               <Description ru="Auto-Skip Iklan &amp; Auto-Play YouTube" en="Auto-Skip Iklan &amp; Auto-Play YouTube"/>
-               <SectionName ru="5. Auto-Skip Iklan &amp; Emulasi" en="5. Auto-Skip Iklan &amp; Emulasi"/>
+               <Description en="Auto-Skip Iklan &amp; Auto-Play YouTube" ru="Auto-Skip Iklan &amp; Auto-Play YouTube"/>
+               <SectionName en="5. Auto-Skip Iklan &amp; Emulasi" ru="5. Auto-Skip Iklan &amp; Emulasi"/>
                <HintVisible>0</HintVisible>
                <Hint en=""/>
                <VisibilityConditionValue>
@@ -517,8 +517,8 @@ Tidak</Values>
           <Defaults/>
           <Model>
                <Name>human_emulation</Name>
-               <Description ru="Emulasi Perilaku Manusia (Scroll Acak)" en="Emulasi Perilaku Manusia (Scroll Acak)"/>
-               <SectionName ru="5. Auto-Skip Iklan &amp; Emulasi" en="5. Auto-Skip Iklan &amp; Emulasi"/>
+               <Description en="Emulasi Perilaku Manusia (Scroll Acak)" ru="Emulasi Perilaku Manusia (Scroll Acak)"/>
+               <SectionName en="5. Auto-Skip Iklan &amp; Emulasi" ru="5. Auto-Skip Iklan &amp; Emulasi"/>
                <HintVisible>0</HintVisible>
                <Hint en=""/>
                <VisibilityConditionValue>
@@ -538,8 +538,8 @@ Nonaktif</Values>
           <Defaults/>
           <Model>
                <Name>delay_between</Name>
-               <Description ru="Jeda Antar Video (Detik)" en="Jeda Antar Video (Detik)"/>
-               <SectionName ru="5. Auto-Skip Iklan &amp; Emulasi" en="5. Auto-Skip Iklan &amp; Emulasi"/>
+               <Description en="Jeda Antar Video (Detik)" ru="Jeda Antar Video (Detik)"/>
+               <SectionName en="5. Auto-Skip Iklan &amp; Emulasi" ru="5. Auto-Skip Iklan &amp; Emulasi"/>
                <HintVisible>0</HintVisible>
                <Hint en=""/>
                <VisibilityConditionValue>

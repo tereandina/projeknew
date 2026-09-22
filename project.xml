@@ -14,19 +14,19 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    }
    var tNum = parseInt(thread_number()) || 1;
 
-   // 1. Jeda Stagger 5 detik antar thread agar pembukaan browser bergantian mulus
+   // 1. Jeda Stagger 5 detik antar thread saat pertama kali start agar pembukaan browser bergantian
    if (tNum > 1 && P_THREAD_CYCLE === 0) {
       log("[Thread " + tNum + "] Menunggu jeda start " + ((tNum - 1) * 5) + " detik agar browser terbuka bergantian...");
       sleep((tNum - 1) * 5000)!
    }
 
-   // 2. Info lokasi VPN Surfshark
+   // 2. Baca listnegara.txt untuk rotasi negara acak
    var cFile = "C:/Users/Admin/Documents/PROJWK NEW/listnegara.txt";
    var cRaw = "";
    try { cRaw = native("filesystem", "readfile", JSON.stringify({value: cFile, base64: false, from: 0, to: 0})); } catch(e) {}
-   var cList = cRaw.split(/\r?\n/).map(function(l) { return l.trim(); }).filter(function(l) { return l.length > 0; });
+   var cList = cRaw.split(/\r?\n/).map(function(l) { return l.trim(); }).filter(function(l) { return l.length > 0 && l.indexOf("#") !== 0; });
    if (cList.length === 0) {
-      cList = ["United States", "United Kingdom", "Germany", "Singapore", "Japan", "Netherlands", "Canada"];
+      cList = ["United States", "United Kingdom", "Germany", "Singapore", "Japan", "Netherlands", "Canada", "Australia", "France", "Switzerland"];
    }
    VAR_COUNTRY = cList[Math.floor(Math.random() * cList.length)];
 
@@ -54,7 +54,7 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    RS("delay_between", false, false)!
    VAR_DELAY_SEC = parseInt(_result().get()) || 5;
 
-   // 5. Pengaturan Jaringan & Proxy (CARA B vs CARA A)
+   // 5. Pengaturan Jaringan: Deteksi Proxy vs VPN Sistem Surfshark
    var pFile = "C:/Users/Admin/Documents/PROJWK NEW/proxies.txt";
    var pRaw = "";
    try { pRaw = native("filesystem", "readfile", JSON.stringify({value: pFile, base64: false, from: 0, to: 0})); } catch(e) {}
@@ -73,14 +73,14 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
       set_proxy(pHost, pPort, true, pUser, pPass)!
       log_success("[Thread " + tNum + "] [CARA B - PROXY AKTIF] Proxy (" + (pIdx + 1) + "/" + pList.length + "): " + pHost + ":" + pPort);
    } else {
-      log_success("[Thread " + tNum + "] [CARA A - SURFSHARK DESKTOP] Menggunakan koneksi VPN Surfshark Desktop (Lokasi: " + VAR_COUNTRY + ")");
+      log_success("[Thread " + tNum + "] [VPN SURFSHARK SISTEM] Terhubung ke VPN (Target Lokasi: " + VAR_COUNTRY + ")");
    }
 
-   // 6. Inisialisasi & Buka Browser Chromium (Langsung tanpa hambatan)
+   // 6. Inisialisasi & Buka Browser Chromium
    browser()!
    log_success("[Thread " + tNum + "] [OK] Browser Chromium #" + tNum + " Berhasil Terbuka");
 
-   // 7. Muat Mesin Otomasi yt_engine.js ke Browser
+   // 7. Pasang Mesin Otomasi yt_engine.js ke Browser
    var engineFile = "C:/Users/Admin/Documents/PROJWK NEW/yt_engine.js";
    VAR_ENGINE_CODE = "";
    try { VAR_ENGINE_CODE = native("filesystem", "readfile", JSON.stringify({value: engineFile, base64: false, from: 0, to: 0})); } catch(e) {}

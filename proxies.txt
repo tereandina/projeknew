@@ -1,33 +1,7 @@
 ﻿# ==============================================================================
-# DAFTAR PROXY UNTUK CARA B (PROXIES PER THREAD)
+# DAFTAR PROXY PER THREAD (CARA B)
 # ==============================================================================
-# Masukkan proxy aktif Anda di baris bawah (hapus tanda '#' jika ingin diaktifkan).
-# Format yang didukung:
-#   IP:PORT             (contoh: 45.12.34.56:8080)
-#   IP:PORT:USER:PASS   (contoh: 45.12.34.56:8080:username:password)
-#
-# JIKA FILE INI KOSONG / BERISI TANDA '#':
-# Bot secara otomatis aman menggunakan koneksi VPN Surfshark Desktop Anda (Cara A).
+# Kosongkan file ini atau beri tanda '#' jika menggunakan koneksi VPN Sistem/Surfshark (Cara A).
+# Jika Anda memiliki proxy pribadi yang aktif (HTTP/SOCKS5), masukkan di bawah ini:
+# Format: IP:PORT atau IP:PORT:USER:PASS
 # ==============================================================================
-
-# Daftar proxy gratis sebelumnya (dinonaktifkan karena sudah mati/expired):
-# 144.124.251.24:10176
-# 47.243.92.199:3129
-# 51.38.120.110:10013
-# 47.251.74.38:8081
-# 130.110.103.245:3129
-# 167.86.111.116:3129
-# 178.236.16.4:8888
-# 47.254.36.25:11080
-# 195.158.8.123:3129
-# 144.124.251.24:10088
-# 43.167.209.118:10081
-# 195.26.224.135:80
-# 202.28.194.139:31290
-# 43.160.255.142:7890
-# 45.146.163.31:80
-# 43.156.199.63:8080
-# 103.94.238.94:30001
-# 153.72.68.0:8080
-# 47.251.74.38:50
-# 165.154.162.73:8888
