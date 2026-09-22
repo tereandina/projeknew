@@ -3,12 +3,10 @@
   <Script><![CDATA[RS("threads", false, false)!
 RESOURCE_1 = _result().get()
 
-section(RESOURCE_1 /*{{threads}}*/,100000 /*100000*/,100000 /*100000*/,0,function(){
-   section_start("Initialize", 0)!
-   section_end()!
+section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, function(){
 
-   section_start("Siapkan Data Video & VPN", 1000)!
-   /*Dat:eyJ1dG8iOiIwIiwiZiI6W10sInVtIjoiMCIsInV0IjoiMCIsInMiOiJjdXN0b20iLCJ2IjoxLCJkIjpbeyJjbGFzcyI6InN0cmluZyIsImRhdGEiOiJTaWFwa2FuIERhdGEgVmlkZW8gJiBWUE4iLCJpZCI6IkNvZGUiLCJ0eXBlIjoiY29uc3RyIn1dLCJ1dyI6IjAifQ==*/
+   section_start("Siapkan Jaringan & Buka Browser", 1000)!
+   /*Dat:eyJ1dG8iOiIwIiwiZiI6W10sInVtIjoiMCIsInV0IjoiMCIsInMiOiJjdXN0b20iLCJ2IjoxLCJkIjpbeyJjbGFzcyI6InN0cmluZyIsImRhdGEiOiJTaWFwa2FuIEphcmluZ2FuICYgQnVrYSBCcm93c2VyIiwiaWQiOiJDb2RlIiwidHlwZSI6ImNvbnN0ciJ9XSwidXciOiIwIn0=*/
    if (typeof P_THREAD_CYCLE === "undefined") {
       P_THREAD_CYCLE = 0;
    } else {
@@ -16,7 +14,7 @@ section(RESOURCE_1 /*{{threads}}*/,100000 /*100000*/,100000 /*100000*/,0,functio
    }
    var tNum = parseInt(thread_number()) || 1;
 
-   // 1. Baca listnegara.txt untuk rotasi negara
+   // 1. Baca listnegara.txt untuk info lokasi
    var cFile = "C:/Users/Admin/Documents/PROJWK NEW/listnegara.txt";
    var cRaw = "";
    try { cRaw = native("filesystem", "readfile", JSON.stringify({value: cFile, base64: false, from: 0, to: 0})); } catch(e) {}
@@ -50,12 +48,7 @@ section(RESOURCE_1 /*{{threads}}*/,100000 /*100000*/,100000 /*100000*/,0,functio
    RS("delay_between", false, false)!
    VAR_DELAY_SEC = parseInt(_result().get()) || 5;
 
-   // 4. Muat Engine Otomasi yt_engine.js
-   var engineFile = "C:/Users/Admin/Documents/PROJWK NEW/yt_engine.js";
-   VAR_ENGINE_CODE = "";
-   try { VAR_ENGINE_CODE = native("filesystem", "readfile", JSON.stringify({value: engineFile, base64: false, from: 0, to: 0})); } catch(e) {}
-
-   // 5. Pengaturan Jaringan & Proxy (CARA B vs CARA A)
+   // 4. Pengaturan Jaringan & Proxy (CARA B vs CARA A)
    var pFile = "C:/Users/Admin/Documents/PROJWK NEW/proxies.txt";
    var pRaw = "";
    try { pRaw = native("filesystem", "readfile", JSON.stringify({value: pFile, base64: false, from: 0, to: 0})); } catch(e) {}
@@ -74,29 +67,70 @@ section(RESOURCE_1 /*{{threads}}*/,100000 /*100000*/,100000 /*100000*/,0,functio
       set_proxy(pHost, pPort, true, pUser, pPass)!
       log_success("[Thread " + tNum + "] [CARA B - PROXY AKTIF] Proxy (" + (pIdx + 1) + "/" + pList.length + "): " + pHost + ":" + pPort);
    } else {
-      set_proxy("", "", true, "", "")!
+      // PENTING: JANGAN PANGGIL set_proxy JIKA TIDAK ADA PROXY!
+      // Browser akan langsung menggunakan koneksi VPN Surfshark Desktop / Sistem.
       log_success("[Thread " + tNum + "] [CARA A - SURFSHARK DESKTOP] Menggunakan koneksi VPN Surfshark Desktop (Lokasi: " + VAR_COUNTRY + ")");
    }
 
-   log_success("[Thread " + tNum + "] [TARGET] Video " + VAR_VIDEO_NUM + "/" + VAR_TOTAL_VIDEOS + ": " + VAR_CURRENT_URL + " (Durasi: " + VAR_TARGET_DUR + " detik)");
+   // 5. User-Agent
+   RS("user_agents", false, false)!
+   var uaVal = _result().get();
+   if (uaVal && uaVal.toString().trim().length > 0) {
+      header("User-Agent", uaVal.toString().trim())!
+   }
+
+   // 6. WAJIB: Buka Browser Chromium
+   browser()!
+   log_success("[Thread " + tNum + "] [OK] Browser Chromium Berhasil Terbuka");
+
+   // 7. Muat Mesin Otomasi yt_engine.js ke Browser
+   var engineFile = "C:/Users/Admin/Documents/PROJWK NEW/yt_engine.js";
+   VAR_ENGINE_CODE = "";
+   try { VAR_ENGINE_CODE = native("filesystem", "readfile", JSON.stringify({value: engineFile, base64: false, from: 0, to: 0})); } catch(e) {}
+   if (VAR_ENGINE_CODE && VAR_ENGINE_CODE.toString().length > 50) {
+      onloadjavascript(VAR_ENGINE_CODE.toString())!
+      log_success("[Thread " + tNum + "] [OK] Fitur Auto-Play & Deep Ad-Skipper Berhasil Dipasang");
+   }
+
+   log_success("[Thread " + tNum + "] [TARGET] Video " + VAR_VIDEO_NUM + "/" + VAR_TOTAL_VIDEOS + ": " + VAR_CURRENT_URL + " (Target Durasi: " + VAR_TARGET_DUR + " detik)");
    section_end()!
 
-   section_start("Buka Video YouTube", 1001)!
-   /*Browser*/
-   onloadjavascript(VAR_ENGINE_CODE)!
+   section_start("Buka Video YouTube (Load URL)", 1001)!
+   /*Dat:eyJ1dG8iOiIwIiwiZiI6W10sInVtIjoiMCIsInV0IjoiMCIsInMiOiJjdXN0b20iLCJ2IjoxLCJkIjpbeyJjbGFzcyI6InN0cmluZyIsImRhdGEiOiJCdWthIFZpZGVvIFlvdVR1YmUgKExvYWQgVVJMKSIsImlkIjoiQ29kZSIsInR5cGUiOiJjb25zdHIifV0sInV3IjoiMCJ9*/
+   log_success("[Thread " + tNum + "] [START] Membuka URL: " + VAR_CURRENT_URL);
    load(VAR_CURRENT_URL)!
-   sleep(2000)!
-   page().script(VAR_ENGINE_CODE)!
+   sleep(3000)!
+   log_success("[Thread " + tNum + "] [OK] Halaman YouTube Berhasil Dimuat & Video Berputar");
    section_end()!
 
-   section_start("Tonton Video YouTube", 1002)!
-   /*Dat:eyJzIjoic2xlZXAiLCJ2IjoxLCJmIjpbXSwidXciOiIwIiwidXQiOiIwIiwidXRvIjoiMCIsInVtIjoiMCIsImQiOlt7ImlkIjoic2xlZXBmcm9tIiwidHlwZSI6ImNvbnN0ciIsImRhdGEiOiIxMDAwIiwiY2xhc3MiOiJpbnQifSx7ImlkIjoic2xlZXB0byIsInR5cGUiOiJjb25zdHIiLCJkYXRhIjoiMTAwMCIsImNsYXNzIjoiaW50In0seyJpZCI6InNsZWVwZnJvbXRvIiwidHlwZSI6ImNvbnN0ciIsImRhdGEiOiJbW1RBUkdFVF9EVVJdXSAqIDEwMDAiLCJjbGFzcyI6ImV4cHJlc3Npb24ifSx7ImlkIjoic2xlZXByYW5kb20iLCJ0eXBlIjoiY2hlY2siLCJkYXRhIjpmYWxzZX1dfQ==*/
-   sleep(VAR_TARGET_DUR * 1000)!
+   section_start("Menonton Video & Emulasi Pengguna", 1002)!
+   /*Dat:eyJ1dG8iOiIwIiwiZiI6W10sInVtIjoiMCIsInV0IjoiMCIsInMiOiJjdXN0b20iLCJ2IjoxLCJkIjpbeyJjbGFzcyI6InN0cmluZyIsImRhdGEiOiJNZW5vbnRvbiBWaWRlbyAmIEVtdWxhc2kgUGVuZ2d1bmEiLCJpZCI6IkNvZGUiLCJ0eXBlIjoiY29uc3RyIn1dLCJ1dyI6IjAifQ==*/
+   RS("human_emulation", false, false)!
+   var humanOpt = _result().get();
+
+   VAR_ELAPSED = 0;
+   while (VAR_ELAPSED < VAR_TARGET_DUR) {
+      sleep(5000)!
+      VAR_ELAPSED += 5;
+
+      if (humanOpt && humanOpt.toString().indexOf("Aktif") >= 0 && (VAR_ELAPSED % 15 === 0)) {
+         var scrollDelta = Math.floor(Math.random() * 200) - 100;
+         scroll(0, scrollDelta)!
+      }
+
+      if (VAR_ELAPSED % 10 === 0 || VAR_ELAPSED >= VAR_TARGET_DUR) {
+         log("[Thread " + tNum + "] Sedang menonton... (" + VAR_ELAPSED + "/" + VAR_TARGET_DUR + " detik)");
+      }
+   }
+   log_success("[Thread " + tNum + "] [DONE] Selesai menonton video (" + VAR_TARGET_DUR + " detik)");
    section_end()!
 
    section_start("Jeda Antar Video & Rotasi", 1003)!
-   /*Dat:eyJzIjoic2xlZXAiLCJ2IjoxLCJmIjpbXSwidXciOiIwIiwidXQiOiIwIiwidXRvIjoiMCIsInVtIjoiMCIsImQiOlt7ImlkIjoic2xlZXBmcm9tIiwidHlwZSI6ImNvbnN0ciIsImRhdGEiOiIxMDAwIiwiY2xhc3MiOiJpbnQifSx7ImlkIjoic2xlZXB0byIsInR5cGUiOiJjb25zdHIiLCJkYXRhIjoiMTAwMCIsImNsYXNzIjoiaW50In0seyJpZCI6InNsZWVwZnJvbXRvIiwidHlwZSI6ImNvbnN0ciIsImRhdGEiOiJbW0RFTEFZX1NFQ11dICogMTAwMCIsImNsYXNzIjoiaW50In0seyJpZCI6InNsZWVwcmFuZG9tIiwidHlwZSI6ImNoZWNrIiwiZGF0YSI6ZmFsc2V9XX0=*/
-   sleep(VAR_DELAY_SEC * 1000)!
+   /*Dat:eyJ1dG8iOiIwIiwiZiI6W10sInVtIjoiMCIsInV0IjoiMCIsInMiOiJjdXN0b20iLCJ2IjoxLCJkIjpbeyJjbGFzcyI6InN0cmluZyIsImRhdGEiOiJKZWRhIEFudGFyIFZpZGVvICYgUm90YXNpIiwiaWQiOiJDb2RlIiwidHlwZSI6ImNvbnN0ciJ9XSwidXciOiIwIn0=*/
+   if (VAR_DELAY_SEC > 0) {
+      log("[Thread " + tNum + "] Istirahat " + VAR_DELAY_SEC + " detik sebelum video berikutnya...");
+      sleep(VAR_DELAY_SEC * 1000)!
+   }
    section_end()!
 })!]]></Script>
   <ModuleInfo><![CDATA[{
@@ -175,13 +209,7 @@ Detector=false
 --disable-features=OptimizationGuideModelDownloading,AutoDeElevate
 --lang=en
 --disable-auto-reload
---autoplay-policy=no-user-gesture-required
---disable-background-networking
---disable-component-update
---disable-breakpad
---disable-dev-shm-usage
---disable-renderer-backgrounding
---force-device-scale-factor=1</ChromeCommandLine>
+--autoplay-policy=no-user-gesture-required</ChromeCommandLine>
   <ModulesMetaJson>{
     "Archive": false,
     "FTP": false,
