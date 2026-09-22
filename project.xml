@@ -14,13 +14,13 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    }
    var tNum = parseInt(thread_number()) || 1;
 
-   // 1. Jeda Stagger antar thread saat pertama kali start (Thread 2 jeda 5 detik agar tidak bentrok)
+   // 1. Jeda Stagger 5 detik antar thread agar pembukaan browser bergantian mulus
    if (tNum > 1 && P_THREAD_CYCLE === 0) {
       log("[Thread " + tNum + "] Menunggu jeda start " + ((tNum - 1) * 5) + " detik agar browser terbuka bergantian...");
       sleep((tNum - 1) * 5000)!
    }
 
-   // 2. Baca listnegara.txt untuk info lokasi
+   // 2. Info lokasi VPN Surfshark
    var cFile = "C:/Users/Admin/Documents/PROJWK NEW/listnegara.txt";
    var cRaw = "";
    try { cRaw = native("filesystem", "readfile", JSON.stringify({value: cFile, base64: false, from: 0, to: 0})); } catch(e) {}
@@ -76,21 +76,11 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
       log_success("[Thread " + tNum + "] [CARA A - SURFSHARK DESKTOP] Menggunakan koneksi VPN Surfshark Desktop (Lokasi: " + VAR_COUNTRY + ")");
    }
 
-   // 6. User-Agent mandiri tanpa lock resource
-   var uaFile = "C:/Users/Admin/Documents/PROJWK NEW/useragents.txt";
-   var uaRaw = "";
-   try { uaRaw = native("filesystem", "readfile", JSON.stringify({value: uaFile, base64: false, from: 0, to: 0})); } catch(e) {}
-   var uaList = uaRaw.split(/\r?\n/).map(function(l) { return l.trim(); }).filter(function(l) { return l.length > 20; });
-   if (uaList.length > 0) {
-      var uaVal = uaList[(tNum - 1 + P_THREAD_CYCLE) % uaList.length];
-      header("User-Agent", uaVal)!
-   }
-
-   // 7. Buka Browser Chromium
+   // 6. Inisialisasi & Buka Browser Chromium (Langsung tanpa hambatan)
    browser()!
    log_success("[Thread " + tNum + "] [OK] Browser Chromium #" + tNum + " Berhasil Terbuka");
 
-   // 8. Muat Mesin Otomasi yt_engine.js ke Browser
+   // 7. Muat Mesin Otomasi yt_engine.js ke Browser
    var engineFile = "C:/Users/Admin/Documents/PROJWK NEW/yt_engine.js";
    VAR_ENGINE_CODE = "";
    try { VAR_ENGINE_CODE = native("filesystem", "readfile", JSON.stringify({value: engineFile, base64: false, from: 0, to: 0})); } catch(e) {}
@@ -105,7 +95,9 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    section_start("Buka Video YouTube (Load URL)", 1001)!
    /*Dat:eyJ1dG8iOiIwIiwiZiI6W10sInVtIjoiMCIsInV0IjoiMCIsInMiOiJjdXN0b20iLCJ2IjoxLCJkIjpbeyJjbGFzcyI6InN0cmluZyIsImRhdGEiOiJCdWthIFZpZGVvIFlvdVR1YmUgKExvYWQgVVJMKSIsImlkIjoiQ29kZSIsInR5cGUiOiJjb25zdHIifV0sInV3IjoiMCJ9*/
    log_success("[Thread " + tNum + "] [START] Membuka URL: " + VAR_CURRENT_URL);
-   _load(VAR_CURRENT_URL, "", true)!
+   waiter_timeout_next(15000);
+   waiter_nofail_next();
+   load(VAR_CURRENT_URL)!
    sleep(3000)!
    log_success("[Thread " + tNum + "] [OK] Halaman YouTube Berhasil Dimuat & Video Berputar");
    section_end()!
@@ -210,8 +202,8 @@ WebglRenderer=""
 WebglVendor=""
 Detector=false
 </SettingsWorker>
-  <ChromeCommandLine>--disk-cache-size=5000000
---disable-features=OptimizationGuideModelDownloading,AutoDeElevate
+  <ChromeCommandLine>--disk-cache-size=10485760
+--disable-features=OptimizationGuideModelDownloading,AutoDeElevate,Translate,MediaRouter
 --lang=en
 --disable-auto-reload
 --autoplay-policy=no-user-gesture-required</ChromeCommandLine>

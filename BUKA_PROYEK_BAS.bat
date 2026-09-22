@@ -12,8 +12,8 @@ taskkill /F /IM Worker.exe >nul 2>&1
 taskkill /F /IM worker.exe >nul 2>&1
 ping 127.0.0.1 -n 2 >nul
 rd /s /q "%APPDATA%\BrowserAutomationStudio\apps\30.5.0\external" >nul 2>&1
-del /f /q "%APPDATA%\BrowserAutomationStudio\apps\30.5.0\actual.*.xml" >nul 2>&1
-del /f /q "%APPDATA%\BrowserAutomationStudio\apps\30.5.0\default.*.xml" >nul 2>&1
+rem Sync files maintained
+
 
 set "PROJ_FILE=%~dp0BAS_YouTube_Bot.xml"
 set "BAS_DIR=C:\Users\Admin\AppData\Roaming\BrowserAutomationStudio\apps\30.5.0"
