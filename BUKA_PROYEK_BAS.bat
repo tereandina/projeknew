@@ -29,7 +29,9 @@ start "" /D "%BAS_DIR%" "%BAS_EXE%" "%PROJ_FILE%"
 
 echo.
 echo ========================================================
-echo  [OK] Browser Automation Studio sedang dibuka!
-echo  Tunggu beberapa detik sampai jendela aplikasi muncul.
+echo  [INFO] Perintah buka BAS telah dijalankan.
+echo  Jika jendela BAS tidak muncul dalam 10 detik,
+echo  pastikan Smart App Control di Windows Security telah di-OFF kan.
 echo ========================================================
-ping 127.0.0.1 -n 4 >nul
+timeout /t 5 >nul
+
