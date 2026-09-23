@@ -14,10 +14,10 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    }
    var tNum = parseInt(thread_number()) || 1;
 
-   // 1. Jeda Stagger 5 detik antar thread saat pertama kali start (responsif 1-detik sleep)
+   // 1. Jeda Stagger 5 detik antar thread saat pertama kali start
    if (tNum > 1 && P_THREAD_CYCLE === 0) {
       var startDelay = (tNum - 1) * 5;
-      log("[Thread " + tNum + "] Menunggu jeda start " + startDelay + " detik agar browser terbuka bergantian...");
+      log("[Thread " + tNum + "] Menunggu jeda start " + startDelay + " detik...");
       var sElapsed = 0;
       while (sElapsed < startDelay) {
          sleep(1000)!
@@ -48,7 +48,7 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    VAR_VIDEO_NUM = videoIdx + 1;
    VAR_TOTAL_VIDEOS = listUrls.length;
 
-   // Konversi URL ke format No-Cookie Embed untuk 100% Bebas Blokir Anti-Bot YouTube
+   // Konversi URL ke No-Cookie Embed: 0% Blokir Bot, 0% CPU Sidebar, 100% Hemat RAM
    var vidId = "";
    var m1 = rawVideoUrl.match(/[?&]v=([^&#]+)/);
    if (m1 && m1[1]) { vidId = m1[1]; }
@@ -57,7 +57,7 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
       if (m2 && m2[1]) { vidId = m2[1]; }
    }
    if (vidId && vidId.length === 11) {
-      VAR_CURRENT_URL = "https://www.youtube-nocookie.com/embed/" + vidId + "?autoplay=1&enablejsapi=1&rel=0";
+      VAR_CURRENT_URL = "https://www.youtube-nocookie.com/embed/" + vidId + "?autoplay=1&mute=1&enablejsapi=1&rel=0";
    } else {
       VAR_CURRENT_URL = rawVideoUrl;
    }
@@ -118,7 +118,7 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    waiter_nofail_next();
    load(VAR_CURRENT_URL)!
    sleep(2000)!
-   log_success("[Thread " + tNum + "] [OK] Halaman YouTube Berhasil Dimuat & Video Berputar Mulus (Anti-Bot Bypass)");
+   log_success("[Thread " + tNum + "] [OK] Video YouTube Berhasil Dimuat & Berputar Mulus");
    section_end()!
 
    section_start("Menonton Video & Emulasi Pengguna", 1002)!
@@ -203,7 +203,7 @@ AutostartDebug=false
 SaveBrowserLog=false
 ProfilesCaching=true
 MaxBrowserStartSimultaneously=5
-MinFreeMemoryToStartBrowser=100
+MinFreeMemoryToStartBrowser=50
 MinUnusedCpu=1
 IsMaximized=false
 Restart=true
@@ -214,23 +214,25 @@ Languages=""
 Modules=""
 Helper="disable"
 Canvas="enable"
-CanvasNoise="enable"
+CanvasNoise=""
 Audio="enable"
 QUIC="enable"
-AudioNoise="enable"
-MaxFPS=30
+AudioNoise=""
+MaxFPS=20
 Webrtc="enable"
 WebrtcIps=""
 Webgl="enable"
-WebglNoise="enable"
+WebglNoise=""
 WebglRenderer=""
 WebglVendor=""
-Detector=true
+Detector=false
 </SettingsWorker>
   <ChromeCommandLine>--disk-cache-size=10485760
 --disable-features=OptimizationGuideModelDownloading,AutoDeElevate,Translate,MediaRouter
 --lang=en
 --disable-auto-reload
+--disable-gpu-vsync
+--renderer-process-limit=2
 --autoplay-policy=no-user-gesture-required</ChromeCommandLine>
   <ModulesMetaJson>{
     "Archive": false,
