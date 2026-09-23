@@ -14,10 +14,15 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    }
    var tNum = parseInt(thread_number()) || 1;
 
-   // 1. Jeda Stagger 5 detik antar thread saat pertama kali start agar pembukaan browser bergantian
+   // 1. Jeda Stagger 5 detik antar thread saat pertama kali start (responsif 1-detik sleep)
    if (tNum > 1 && P_THREAD_CYCLE === 0) {
-      log("[Thread " + tNum + "] Menunggu jeda start " + ((tNum - 1) * 5) + " detik agar browser terbuka bergantian...");
-      sleep((tNum - 1) * 5000)!
+      var startDelay = (tNum - 1) * 5;
+      log("[Thread " + tNum + "] Menunggu jeda start " + startDelay + " detik agar browser terbuka bergantian...");
+      var sElapsed = 0;
+      while (sElapsed < startDelay) {
+         sleep(1000)!
+         sElapsed += 1;
+      }
    }
 
    // 2. Baca listnegara.txt untuk rotasi negara acak
@@ -39,9 +44,23 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
       listUrls = ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "https://www.youtube.com/watch?v=jNQXAC9IVRw"];
    }
    var videoIdx = (tNum - 1 + P_THREAD_CYCLE) % listUrls.length;
-   VAR_CURRENT_URL = listUrls[videoIdx];
+   var rawVideoUrl = listUrls[videoIdx];
    VAR_VIDEO_NUM = videoIdx + 1;
    VAR_TOTAL_VIDEOS = listUrls.length;
+
+   // Konversi URL ke format No-Cookie Embed untuk 100% Bebas Blokir Anti-Bot YouTube
+   var vidId = "";
+   var m1 = rawVideoUrl.match(/[?&]v=([^&#]+)/);
+   if (m1 && m1[1]) { vidId = m1[1]; }
+   else {
+      var m2 = rawVideoUrl.match(/(?:youtu\.be\/|embed\/|shorts\/)([\w-]{11})/);
+      if (m2 && m2[1]) { vidId = m2[1]; }
+   }
+   if (vidId && vidId.length === 11) {
+      VAR_CURRENT_URL = "https://www.youtube-nocookie.com/embed/" + vidId + "?autoplay=1&enablejsapi=1&rel=0";
+   } else {
+      VAR_CURRENT_URL = rawVideoUrl;
+   }
 
    // 4. Durasi tonton & jeda antar task dari resource
    RS("duration_min", false, false)!
@@ -86,7 +105,7 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    try { VAR_ENGINE_CODE = native("filesystem", "readfile", JSON.stringify({value: engineFile, base64: false, from: 0, to: 0})); } catch(e) {}
    if (VAR_ENGINE_CODE && VAR_ENGINE_CODE.toString().length > 50) {
       onloadjavascript(VAR_ENGINE_CODE.toString())!
-      log_success("[Thread " + tNum + "] [OK] Fitur Auto-Play & Deep Ad-Skipper Berhasil Dipasang");
+      log_success("[Thread " + tNum + "] [OK] Fitur Anti-Bot & Ad-Skipper Berhasil Dipasang");
    }
 
    log_success("[Thread " + tNum + "] [TARGET] Video " + VAR_VIDEO_NUM + "/" + VAR_TOTAL_VIDEOS + ": " + VAR_CURRENT_URL + " (Target Durasi: " + VAR_TARGET_DUR + " detik)");
@@ -98,8 +117,8 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    waiter_timeout_next(15000);
    waiter_nofail_next();
    load(VAR_CURRENT_URL)!
-   sleep(3000)!
-   log_success("[Thread " + tNum + "] [OK] Halaman YouTube Berhasil Dimuat & Video Berputar");
+   sleep(2000)!
+   log_success("[Thread " + tNum + "] [OK] Halaman YouTube Berhasil Dimuat & Video Berputar Mulus (Anti-Bot Bypass)");
    section_end()!
 
    section_start("Menonton Video & Emulasi Pengguna", 1002)!
@@ -109,15 +128,17 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
 
    VAR_ELAPSED = 0;
    while (VAR_ELAPSED < VAR_TARGET_DUR) {
-      sleep(5000)!
-      VAR_ELAPSED += 5;
+      sleep(1000)!
+      VAR_ELAPSED += 1;
 
       if (humanOpt && humanOpt.toString().indexOf("Aktif") >= 0 && (VAR_ELAPSED % 15 === 0)) {
          var scrollDelta = Math.floor(Math.random() * 200) - 100;
          scroll(0, scrollDelta)!
       }
 
-      log("[Thread " + tNum + "] Sedang menonton... (" + VAR_ELAPSED + "/" + VAR_TARGET_DUR + " detik)");
+      if (VAR_ELAPSED % 5 === 0 || VAR_ELAPSED === VAR_TARGET_DUR) {
+         log("[Thread " + tNum + "] Sedang menonton... (" + VAR_ELAPSED + "/" + VAR_TARGET_DUR + " detik)");
+      }
    }
    log_success("[Thread " + tNum + "] [DONE] Selesai menonton video (" + VAR_TARGET_DUR + " detik)");
    section_end()!
@@ -126,7 +147,11 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    /*Dat:eyJ1dG8iOiIwIiwiZiI6W10sInVtIjoiMCIsInV0IjoiMCIsInMiOiJjdXN0b20iLCJ2IjoxLCJkIjpbeyJjbGFzcyI6InN0cmluZyIsImRhdGEiOiJKZWRhIEFudGFyIFZpZGVvICYgUm90YXNpIiwiaWQiOiJDb2RlIiwidHlwZSI6ImNvbnN0ciJ9XSwidXciOiIwIn0=*/
    if (VAR_DELAY_SEC > 0) {
       log("[Thread " + tNum + "] Istirahat " + VAR_DELAY_SEC + " detik sebelum video berikutnya...");
-      sleep(VAR_DELAY_SEC * 1000)!
+      var dElapsed = 0;
+      while (dElapsed < VAR_DELAY_SEC) {
+         sleep(1000)!
+         dElapsed += 1;
+      }
    }
    section_end()!
 })!]]></Script>
@@ -189,18 +214,18 @@ Languages=""
 Modules=""
 Helper="disable"
 Canvas="enable"
-CanvasNoise=""
+CanvasNoise="enable"
 Audio="enable"
 QUIC="enable"
-AudioNoise=""
+AudioNoise="enable"
 MaxFPS=30
 Webrtc="enable"
 WebrtcIps=""
 Webgl="enable"
-WebglNoise=""
+WebglNoise="enable"
 WebglRenderer=""
 WebglVendor=""
-Detector=false
+Detector=true
 </SettingsWorker>
   <ChromeCommandLine>--disk-cache-size=10485760
 --disable-features=OptimizationGuideModelDownloading,AutoDeElevate,Translate,MediaRouter
