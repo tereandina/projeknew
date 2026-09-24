@@ -1,7 +1,7 @@
-﻿// yt_engine.js - Universal Anti-Bot Bypass, 144p Quality Lock & Ad-Skip Engine (2026)
+﻿// yt_engine.js - Master Zero-CPU YouTube 144p & Anti-Bot Engine (2026)
 (function() {
-    if (window.__YT_ZERO_CPU_ENGINE__) return;
-    window.__YT_ZERO_CPU_ENGINE__ = true;
+    if (window.__YT_MASTER_ENGINE__) return;
+    window.__YT_MASTER_ENGINE__ = true;
 
     // Cookie Google & Consent
     try {
@@ -10,7 +10,7 @@
         document.cookie = "SOCS=CAESEwgDEgk0ODE3Nzk3MjQaAmVuIAEaBgiA_LyaBg; domain=.youtube-nocookie.com; path=/; max-age=31536000";
     } catch(e) {}
 
-    // Kunci kualitas ke 144p (tiny)
+    // Kunci kualitas 144p
     try {
         localStorage.setItem('yt-player-quality', JSON.stringify({
             data: 'tiny',
@@ -19,10 +19,10 @@
         }));
     } catch(e) {}
 
-    // Injeksi CSS sekali untuk menyembunyikan semua elemen berat
+    // CSS murni sembunyikan semua elemen berat
     try {
         var style = document.createElement('style');
-        style.id = 'yt-ultra-light-css';
+        style.id = 'yt-master-css';
         style.textContent = '#comments, #related, #secondary, ytd-merch-shelf-renderer, #chat, ytd-engagement-panel-section-list-renderer, ytd-banner-promo-renderer, ytd-statement-banner-renderer, tp-yt-iron-overlay-backdrop, ytd-consent-bump-v2-lightbox, tp-yt-paper-dialog#dialog, .eom-v1-dialog { display: none !important; }';
         (document.head || document.documentElement).appendChild(style);
     } catch(e) {}
@@ -34,9 +34,9 @@
 
     var qualityDone = false;
 
-    function runEngine() {
+    function runMasterEngine() {
         try {
-            // A. Deteksi bot-block cepat via selector spesifik (tanpa innerText reflow)
+            // A. Deteksi bot-block cepat via selector spesifik (tanpa innerText)
             var botErr = document.querySelector('ytd-enforcement-message-view-model, #player-error-message-container, .ytp-error');
             if (botErr) {
                 var m = window.location.href.match(/(?:v=|\/embed\/|\/)([\w-]{11})/);
@@ -46,7 +46,7 @@
                 }
             }
 
-            // B. Tutup consent dialog jika ada
+            // B. Tutup consent dialog
             var consentBtn = document.querySelector('ytd-button-renderer#dismiss-button button, form[action*="consent"] button, button[aria-label*="Agree" i]');
             if (consentBtn) { clickEl(consentBtn); }
 
@@ -55,7 +55,7 @@
             var v = player ? player.querySelector('video') : document.querySelector('video');
 
             if (player && v) {
-                // Kunci 144p sekali saja
+                // Kunci 144p
                 if (!qualityDone) {
                     try {
                         if (typeof player.setPlaybackQualityRange === 'function') {
@@ -93,6 +93,6 @@
         } catch(err) {}
     }
 
-    setInterval(runEngine, 2000);
-    runEngine();
+    setInterval(runMasterEngine, 2000);
+    runMasterEngine();
 })();

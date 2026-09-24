@@ -160,42 +160,33 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
 ]]></ModuleInfo>
      <Modules/>
      <EmbeddedData><![CDATA[[]]]></EmbeddedData>
-     <DatabaseId>
-  </DatabaseId>
-     <Schema>
-  </Schema>
+     <DatabaseId></DatabaseId>
+     <Schema></Schema>
      <ConnectionIsRemote>false</ConnectionIsRemote>
-     <ConnectionServer>
-  </ConnectionServer>
-     <ConnectionPort>
-  </ConnectionPort>
-     <ConnectionLogin>
-  </ConnectionLogin>
-     <ConnectionPassword>
-  </ConnectionPassword>
-     <HideDatabase>false</HideDatabase>
-     <DatabaseAdvanced>true</DatabaseAdvanced>
-     <DatabaseAdvancedDisabled>false</DatabaseAdvancedDisabled>
-     <ScriptName>
-  </ScriptName>
+     <ConnectionServer></ConnectionServer>
+     <ConnectionPort></ConnectionPort>
+     <ConnectionLogin></ConnectionLogin>
+     <ConnectionPassword></ConnectionPassword>
+     <HideDatabase>true</HideDatabase>
+     <DatabaseAdvanced>false</DatabaseAdvanced>
+     <DatabaseAdvancedDisabled>true</DatabaseAdvancedDisabled>
+     <ScriptName></ScriptName>
      <ProtectionStrength>4</ProtectionStrength>
-     <UnusedModules>PhoneVerification;AI;String;JSON;ThreadSync;URL;Path;InMail;ClickCaptcha</UnusedModules>
+     <UnusedModules>PhoneVerification;AI;String;JSON;ThreadSync;URL;Path;InMail;ClickCaptcha;Database;Excel;FTP;Archive;SQL;ReCaptcha;FunCaptcha;HCaptcha;GeeTest;SmsReceive;Checksum;MailDeprecated</UnusedModules>
      <ScriptIcon></ScriptIcon>
-     <IsCustomIcon>true</IsCustomIcon>
+     <IsCustomIcon>false</IsCustomIcon>
      <HideBrowsers>false</HideBrowsers>
-     <URLWithServerConfig>
-  </URLWithServerConfig>
+     <URLWithServerConfig></URLWithServerConfig>
      <ShowAdvanced>false</ShowAdvanced>
      <IntegrateScheduler>false</IntegrateScheduler>
      <SingleInstance>false</SingleInstance>
      <CopySilent>false</CopySilent>
      <IsEnginesInAppData>false</IsEnginesInAppData>
      <CompileType>NoProtection</CompileType>
-     <ScriptVersion>
-  </ScriptVersion>
+     <ScriptVersion></ScriptVersion>
      <AvailableLanguages>en</AvailableLanguages>
      <EngineVersion>30.5.0</EngineVersion>
-     <SettingsWorker>EnableWidevine=true
+     <SettingsWorker>EnableWidevine=false
 EnableSafeBrowsing=false
 EnableVariations=false
 EnableComponents=false
@@ -203,7 +194,7 @@ AutostartDebug=false
 SaveBrowserLog=false
 ProfilesCaching=false
 MaxBrowserStartSimultaneously=1
-MinFreeMemoryToStartBrowser=50
+MinFreeMemoryToStartBrowser=20
 MinUnusedCpu=1
 IsMaximized=false
 Restart=false
@@ -227,13 +218,20 @@ WebglRenderer=""
 WebglVendor=""
 Detector=false
 </SettingsWorker>
-     <ChromeCommandLine>--disk-cache-size=10485760
---disable-features=OptimizationGuideModelDownloading,AutoDeElevate,Translate,MediaRouter
+     <ChromeCommandLine>--disable-gpu
+--disable-d3d11
+--disable-software-rasterizer
+--disable-accelerated-video-decode
+--disable-gpu-compositing
+--disk-cache-size=10485760
+--disable-features=OptimizationGuideModelDownloading,AutoDeElevate,Translate,MediaRouter,CalculateNativeWinOcclusion
 --lang=en
 --disable-auto-reload
---disable-gpu-vsync
+--disable-background-networking
+--disable-component-update
 --renderer-process-limit=2
---autoplay-policy=no-user-gesture-required</ChromeCommandLine>
+--autoplay-policy=no-user-gesture-required
+--mute-audio</ChromeCommandLine>
      <ModulesMetaJson>{
     "Archive": false,
     "FTP": false,
@@ -274,10 +272,8 @@ Detector=false
                <SectionName en="1. Pengaturan Bot &amp; Video" ru="1. Pengaturan Bot &amp; Video"/>
                <HintVisible>0</HintVisible>
                <Hint en=""/>
-               <VisibilityConditionValue>
-      </VisibilityConditionValue>
-               <VisibilityConditionVariable>
-      </VisibilityConditionVariable>
+               <VisibilityConditionValue></VisibilityConditionValue>
+               <VisibilityConditionVariable></VisibilityConditionVariable>
                <Type>FixedInteger</Type>
                <IsAdvanced>0</IsAdvanced>
                <Visible>1</Visible>
@@ -294,10 +290,8 @@ Detector=false
                <SectionName en="2. Durasi &amp; Jeda" ru="2. Durasi &amp; Jeda"/>
                <HintVisible>0</HintVisible>
                <Hint en=""/>
-               <VisibilityConditionValue>
-      </VisibilityConditionValue>
-               <VisibilityConditionVariable>
-      </VisibilityConditionVariable>
+               <VisibilityConditionValue></VisibilityConditionValue>
+               <VisibilityConditionVariable></VisibilityConditionVariable>
                <Type>FixedInteger</Type>
                <IsAdvanced>0</IsAdvanced>
                <Visible>1</Visible>
@@ -314,10 +308,8 @@ Detector=false
                <SectionName en="2. Durasi &amp; Jeda" ru="2. Durasi &amp; Jeda"/>
                <HintVisible>0</HintVisible>
                <Hint en=""/>
-               <VisibilityConditionValue>
-      </VisibilityConditionValue>
-               <VisibilityConditionVariable>
-      </VisibilityConditionVariable>
+               <VisibilityConditionValue></VisibilityConditionValue>
+               <VisibilityConditionVariable></VisibilityConditionVariable>
                <Type>FixedInteger</Type>
                <IsAdvanced>0</IsAdvanced>
                <Visible>1</Visible>
@@ -334,10 +326,8 @@ Detector=false
                <SectionName en="2. Durasi &amp; Jeda" ru="2. Durasi &amp; Jeda"/>
                <HintVisible>0</HintVisible>
                <Hint en=""/>
-               <VisibilityConditionValue>
-      </VisibilityConditionValue>
-               <VisibilityConditionVariable>
-      </VisibilityConditionVariable>
+               <VisibilityConditionValue></VisibilityConditionValue>
+               <VisibilityConditionVariable></VisibilityConditionVariable>
                <Type>FixedInteger</Type>
                <IsAdvanced>0</IsAdvanced>
                <Visible>1</Visible>
@@ -354,10 +344,8 @@ Detector=false
                <SectionName en="3. Fitur Tambahan" ru="3. Fitur Tambahan"/>
                <HintVisible>0</HintVisible>
                <Hint en=""/>
-               <VisibilityConditionValue>
-      </VisibilityConditionValue>
-               <VisibilityConditionVariable>
-      </VisibilityConditionVariable>
+               <VisibilityConditionValue></VisibilityConditionValue>
+               <VisibilityConditionVariable></VisibilityConditionVariable>
                <Type>Select</Type>
                <IsAdvanced>0</IsAdvanced>
                <Visible>1</Visible>
@@ -375,10 +363,8 @@ Tidak</Values>
                <SectionName en="3. Fitur Tambahan" ru="3. Fitur Tambahan"/>
                <HintVisible>0</HintVisible>
                <Hint en=""/>
-               <VisibilityConditionValue>
-      </VisibilityConditionValue>
-               <VisibilityConditionVariable>
-      </VisibilityConditionVariable>
+               <VisibilityConditionValue></VisibilityConditionValue>
+               <VisibilityConditionVariable></VisibilityConditionVariable>
                <Type>Select</Type>
                <IsAdvanced>0</IsAdvanced>
                <Visible>1</Visible>
