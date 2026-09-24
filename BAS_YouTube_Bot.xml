@@ -95,10 +95,10 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    section_start("Buka Video YouTube (Load URL)", 1001)!
    /*Dat:eyJ1dG8iOiIwIiwiZiI6W10sInVtIjoiMCIsInV0IjoiMCIsInMiOiJjdXN0b20iLCJ2IjoxLCJkIjpbeyJjbGFzcyI6InN0cmluZyIsImRhdGEiOiJCdWthIFZpZGVvIFlvdVR1YmUgKExvYWQgVVJMKSIsImlkIjoiQ29kZSIsInR5cGUiOiJjb25zdHIifV0sInV3IjoiMCJ9*/
    log_success("[Thread " + tNum + "] [START] Membuka URL: " + VAR_CURRENT_URL);
-   waiter_timeout_next(5000);
+   waiter_timeout_next(3000);
    waiter_nofail_next();
    load(VAR_CURRENT_URL)!
-   sleep(2000)!
+   sleep(1500)!
    log_success("[Thread " + tNum + "] [OK] Video YouTube Berhasil Dimuat & Berputar");
    section_end()!
 
@@ -127,10 +127,14 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    log_success("[Thread " + tNum + "] [DONE] Selesai menonton selama " + VAR_TARGET_DUR + " detik! (Target " + minD + "-" + maxD + "s terpenuhi)");
    section_end()!
 
-   section_start("Jeda Antar Video & Rotasi", 1003)!
-   /*Dat:eyJ1dG8iOiIwIiwiZiI6W10sInVtIjoiMCIsInV0IjoiMCIsInMiOiJjdXN0b20iLCJ2IjoxLCJkIjpbeyJjbGFzcyI6InN0cmluZyIsImRhdGEiOiJKZWRhIEFudGFyIFZpZGVvICYgUm90YXNpIiwiaWQiOiJDb2RlIiwidHlwZSI6ImNvbnN0ciJ9XSwidXciOiIwIn0=*/
+   section_start("Tutup Browser Otomatis & Jeda Antar Task", 1003)!
+   /*Dat:eyJ1dG8iOiIwIiwiZiI6W10sInVtIjoiMCIsInV0IjoiMCIsInMiOiJjdXN0b20iLCJ2IjoxLCJkIjpbeyJjbGFzcyI6InN0cmluZyIsImRhdGEiOiJUdXR1cCBCcm93c2VyIE90b21hdGlzICYgSmVkYSBBbnRhciBUYXNrIiwiaWQiOiJDb2RlIiwidHlwZSI6ImNvbnN0ciJ9XSwidXciOiIwIn0=*/
+   log("[Thread " + tNum + "] ðŸšª Menutup browser Chromium #" + tNum + " otomatis...");
+   close_browser()!
+   log_success("[Thread " + tNum + "] [CLOSED] Browser #" + tNum + " berhasil ditutup otomatis.");
+
    if (VAR_DELAY_SEC > 0) {
-      log("[Thread " + tNum + "] Istirahat " + VAR_DELAY_SEC + " detik sebelum video berikutnya...");
+      log("[Thread " + tNum + "] Istirahat " + VAR_DELAY_SEC + " detik sebelum membuka video berikutnya...");
       sleep(VAR_DELAY_SEC * 1000)!
    }
    section_end()!
@@ -173,7 +177,7 @@ EnableComponents=false
 AutostartDebug=false
 SaveBrowserLog=false
 ProfilesCaching=false
-MaxBrowserStartSimultaneously=1
+MaxBrowserStartSimultaneously=2
 MinFreeMemoryToStartBrowser=50
 MinUnusedCpu=1
 IsMaximized=false

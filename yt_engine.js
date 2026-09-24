@@ -1,16 +1,17 @@
-﻿// yt_engine.js - Ultimate Instant Ad-Skipper, Pop-up Destroyer & 144p Quality Lock (2026)
+﻿// yt_engine.js - Universal 144p Auto-Play, Pop-up Destroyer & Ad-Skipper (2026)
 (function() {
-    if (window.__YT_ULTIMATE_ENGINE__) return;
-    window.__YT_ULTIMATE_ENGINE__ = true;
-    console.log("[YT Engine] Ultimate Auto-Skip & 144p Mode Active");
+    if (window.__YT_PERFECT_ENGINE__) return;
+    window.__YT_PERFECT_ENGINE__ = true;
+    console.log("[YT Engine] Auto-Play & Instant Ad-Skip Active");
 
-    // 1. Google Cookie & Consent
+    // Cookie Google & Consent
     try {
         document.cookie = "SOCS=CAESEwgDEgk0ODE3Nzk3MjQaAmVuIAEaBgiA_LyaBg; domain=.youtube.com; path=/; max-age=31536000";
         document.cookie = "CONSENT=PENDING+999; domain=.youtube.com; path=/; max-age=31536000";
+        document.cookie = "SOCS=CAESEwgDEgk0ODE3Nzk3MjQaAmVuIAEaBgiA_LyaBg; domain=.youtube-nocookie.com; path=/; max-age=31536000";
     } catch(e) {}
 
-    // 2. Kunci kualitas ke 144p (tiny) di LocalStorage
+    // Kunci kualitas ke 144p (tiny)
     try {
         localStorage.setItem('yt-player-quality', JSON.stringify({
             data: 'tiny',
@@ -19,10 +20,10 @@
         }));
     } catch(e) {}
 
-    // 3. CSS Injeksi Agresif: Sembunyikan sidebar rekomendasi, thumbnail, komentar, banner Premium
+    // Injeksi CSS agresif: Sembunyikan sidebar rekomendasi, komentar, pop-up Premium
     try {
         var style = document.createElement('style');
-        style.id = 'yt-ultimate-light-css';
+        style.id = 'yt-perfect-css';
         style.textContent = `
             #secondary, #related, #comments, #below, 
             ytd-watch-next-secondary-results-renderer, 
@@ -59,8 +60,8 @@
 
     var qualityDone = false;
 
-    // Loop Cepat (250ms) khusus untuk Skip Iklan Instan & Tutup Popup Premium
-    function fastAdSkipLoop() {
+    // Loop Cepat (200ms) untuk Skip Iklan & Tutup Popup Premium
+    function fastLoop() {
         try {
             // A. Tutup pop-up "YouTube Premium - No thanks / Batal"
             var premiumDismiss = document.querySelectorAll('ytd-mealbar-promo-renderer #dismiss-button button, ytd-mealbar-promo-renderer button[aria-label*="No thanks" i], tp-yt-paper-dialog #dismiss-button button, ytd-button-renderer#dismiss-button button, button[aria-label*="No thanks" i], button[aria-label*="Tidak" i], button[aria-label*="Batal" i]');
@@ -82,17 +83,14 @@
                            document.querySelector('.ad-showing, .ad-interrupting, .ytp-ad-player-overlay, .ytp-ad-preview-container');
 
                 if (isAd) {
-                    // 1. Panggil skipAd API
                     if (typeof player.skipAd === 'function') { try { player.skipAd(); } catch(e) {} }
                     if (typeof player.cancelPlayback === 'function') { try { player.cancelPlayback(); } catch(e) {} }
 
-                    // 2. Klik semua jenis tombol skip iklan
                     var skipButtons = document.querySelectorAll('.ytp-skip-ad-button, .ytp-ad-skip-button, .ytp-ad-skip-button-modern, button.ytp-ad-skip-button-modern, button.ytp-skip-ad-button, .ytp-ad-skip-button-container button, .ytp-ad-skip-button-slot button, .videoAdUiSkipButton, [id^="skip-button:"] button, button[class*="skip-button"], button[class*="ytp-ad-skip"], .ytp-ad-overlay-close-button');
                     for (var s = 0; s < skipButtons.length; s++) {
                         clickEl(skipButtons[s]);
                     }
 
-                    // 3. Fast-forward video iklan ke detik terakhir
                     if (isFinite(v.duration) && v.duration > 0 && v.duration < 300) {
                         v.muted = true;
                         v.playbackRate = 16.0;
@@ -100,62 +98,41 @@
                             v.currentTime = v.duration;
                         }
                     }
-                }
-            }
-        } catch(e) {}
-    }
-
-    // Loop Normal (1000ms) untuk Auto-Play & Kunci 144p
-    function normalPlaybackLoop() {
-        try {
-            var player = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
-            var v = player ? player.querySelector('video') : document.querySelector('video');
-
-            if (player && v) {
-                // Kunci kualitas ke 144p (tiny)
-                if (!qualityDone) {
-                    try {
-                        if (typeof player.setPlaybackQualityRange === 'function') {
-                            player.setPlaybackQualityRange('tiny', 'tiny');
-                            qualityDone = true;
-                        } else if (typeof player.setPlaybackQuality === 'function') {
-                            player.setPlaybackQuality('tiny');
-                            qualityDone = true;
-                        }
-                    } catch(q) {}
-                }
-
-                var isAd = player.classList.contains('ad-showing') || player.classList.contains('ad-interrupting');
-                if (!isAd) {
-                    // Video Utama: Kecepatan normal 1.0x
-                    if (v.playbackRate !== 1.0) {
-                        v.playbackRate = 1.0;
-                    }
-
-                    // Auto-Play: Tekan tombol Play besar jika ada
+                } else {
+                    if (v.playbackRate !== 1.0) { v.playbackRate = 1.0; }
                     var bigPlay = player.querySelector('button.ytp-large-play-button');
                     if (bigPlay && (bigPlay.offsetWidth > 0 || bigPlay.offsetHeight > 0)) {
                         clickEl(bigPlay);
                     }
-
-                    // Auto-Play: Pastikan video berputar
                     if (v.paused) {
-                        if (typeof player.playVideo === 'function') {
-                            try { player.playVideo(); } catch(e) {}
-                        }
+                        if (typeof player.playVideo === 'function') { try { player.playVideo(); } catch(e) {} }
                         v.play().catch(function(){});
                     }
-
-                    // Tutup pop-up konfirmasi
-                    var confirmBtn = document.querySelector('yt-confirm-dialog-renderer #confirm-button button');
-                    if (confirmBtn) { clickEl(confirmBtn); }
                 }
             }
         } catch(e) {}
     }
 
-    setInterval(fastAdSkipLoop, 250);
-    setInterval(normalPlaybackLoop, 1000);
-    fastAdSkipLoop();
-    normalPlaybackLoop();
+    // Loop Normal (1000ms) untuk Kunci 144p
+    function normalLoop() {
+        try {
+            var player = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
+            if (player && !qualityDone) {
+                try {
+                    if (typeof player.setPlaybackQualityRange === 'function') {
+                        player.setPlaybackQualityRange('tiny', 'tiny');
+                        qualityDone = true;
+                    } else if (typeof player.setPlaybackQuality === 'function') {
+                        player.setPlaybackQuality('tiny');
+                        qualityDone = true;
+                    }
+                } catch(q) {}
+            }
+        } catch(e) {}
+    }
+
+    setInterval(fastLoop, 200);
+    setInterval(normalLoop, 1000);
+    fastLoop();
+    normalLoop();
 })();
