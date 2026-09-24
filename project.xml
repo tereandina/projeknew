@@ -14,15 +14,10 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    }
    var tNum = parseInt(thread_number()) || 1;
 
-   // 1. Jeda Stagger 5 detik antar thread saat pertama kali start
+   // 1. Jeda Stagger 5 detik antar thread saat pertama kali start agar browser terbuka bergantian rapi
    if (tNum > 1 && P_THREAD_CYCLE === 0) {
-      var startDelay = (tNum - 1) * 5;
-      log("[Thread " + tNum + "] Menunggu jeda start " + startDelay + " detik...");
-      var sElapsed = 0;
-      while (sElapsed < startDelay) {
-         sleep(1000)!
-         sElapsed += 1;
-      }
+      log("[Thread " + tNum + "] Menunggu jeda start " + ((tNum - 1) * 5) + " detik agar browser terbuka bergantian...");
+      sleep((tNum - 1) * 5000)!
    }
 
    // 2. Baca listnegara.txt untuk rotasi negara acak
@@ -44,23 +39,9 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
       listUrls = ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "https://www.youtube.com/watch?v=jNQXAC9IVRw"];
    }
    var videoIdx = (tNum - 1 + P_THREAD_CYCLE) % listUrls.length;
-   var rawVideoUrl = listUrls[videoIdx];
+   VAR_CURRENT_URL = listUrls[videoIdx];
    VAR_VIDEO_NUM = videoIdx + 1;
    VAR_TOTAL_VIDEOS = listUrls.length;
-
-   // Konversi URL ke No-Cookie Embed: 0% Blokir Bot, 0% CPU Sidebar, 100% Hemat RAM
-   var vidId = "";
-   var m1 = rawVideoUrl.match(/[?&]v=([^&#]+)/);
-   if (m1 && m1[1]) { vidId = m1[1]; }
-   else {
-      var m2 = rawVideoUrl.match(/(?:youtu\.be\/|embed\/|shorts\/)([\w-]{11})/);
-      if (m2 && m2[1]) { vidId = m2[1]; }
-   }
-   if (vidId && vidId.length === 11) {
-      VAR_CURRENT_URL = "https://www.youtube-nocookie.com/embed/" + vidId + "?autoplay=1&mute=1&enablejsapi=1&rel=0";
-   } else {
-      VAR_CURRENT_URL = rawVideoUrl;
-   }
 
    // 4. Durasi tonton & jeda antar task dari resource
    RS("duration_min", false, false)!
@@ -105,7 +86,7 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    try { VAR_ENGINE_CODE = native("filesystem", "readfile", JSON.stringify({value: engineFile, base64: false, from: 0, to: 0})); } catch(e) {}
    if (VAR_ENGINE_CODE && VAR_ENGINE_CODE.toString().length > 50) {
       onloadjavascript(VAR_ENGINE_CODE.toString())!
-      log_success("[Thread " + tNum + "] [OK] Fitur Anti-Bot & Ad-Skipper Berhasil Dipasang");
+      log_success("[Thread " + tNum + "] [OK] Fitur Auto-Play & Deep Ad-Skipper Berhasil Dipasang");
    }
 
    log_success("[Thread " + tNum + "] [TARGET] Video " + VAR_VIDEO_NUM + "/" + VAR_TOTAL_VIDEOS + ": " + VAR_CURRENT_URL + " (Target Durasi: " + VAR_TARGET_DUR + " detik)");
@@ -117,8 +98,8 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    waiter_timeout_next(15000);
    waiter_nofail_next();
    load(VAR_CURRENT_URL)!
-   sleep(2000)!
-   log_success("[Thread " + tNum + "] [OK] Video YouTube Berhasil Dimuat & Berputar Mulus");
+   sleep(3000)!
+   log_success("[Thread " + tNum + "] [OK] Video YouTube Berhasil Dimuat & Berputar");
    section_end()!
 
    section_start("Menonton Video & Emulasi Pengguna", 1002)!
@@ -128,15 +109,15 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
 
    VAR_ELAPSED = 0;
    while (VAR_ELAPSED < VAR_TARGET_DUR) {
-      sleep(1000)!
-      VAR_ELAPSED += 1;
+      sleep(5000)!
+      VAR_ELAPSED += 5;
 
       if (humanOpt && humanOpt.toString().indexOf("Aktif") >= 0 && (VAR_ELAPSED % 15 === 0)) {
          var scrollDelta = Math.floor(Math.random() * 200) - 100;
          scroll(0, scrollDelta)!
       }
 
-      if (VAR_ELAPSED % 5 === 0 || VAR_ELAPSED === VAR_TARGET_DUR) {
+      if (VAR_ELAPSED % 15 === 0 || VAR_ELAPSED >= VAR_TARGET_DUR) {
          log("[Thread " + tNum + "] Sedang menonton... (" + VAR_ELAPSED + "/" + VAR_TARGET_DUR + " detik)");
       }
    }
@@ -147,11 +128,7 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    /*Dat:eyJ1dG8iOiIwIiwiZiI6W10sInVtIjoiMCIsInV0IjoiMCIsInMiOiJjdXN0b20iLCJ2IjoxLCJkIjpbeyJjbGFzcyI6InN0cmluZyIsImRhdGEiOiJKZWRhIEFudGFyIFZpZGVvICYgUm90YXNpIiwiaWQiOiJDb2RlIiwidHlwZSI6ImNvbnN0ciJ9XSwidXciOiIwIn0=*/
    if (VAR_DELAY_SEC > 0) {
       log("[Thread " + tNum + "] Istirahat " + VAR_DELAY_SEC + " detik sebelum video berikutnya...");
-      var dElapsed = 0;
-      while (dElapsed < VAR_DELAY_SEC) {
-         sleep(1000)!
-         dElapsed += 1;
-      }
+      sleep(VAR_DELAY_SEC * 1000)!
    }
    section_end()!
 })!]]></Script>
@@ -186,7 +163,7 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
      <ScriptVersion></ScriptVersion>
      <AvailableLanguages>en</AvailableLanguages>
      <EngineVersion>30.5.0</EngineVersion>
-     <SettingsWorker>EnableWidevine=false
+     <SettingsWorker>EnableWidevine=true
 EnableSafeBrowsing=false
 EnableVariations=false
 EnableComponents=false
@@ -194,7 +171,7 @@ AutostartDebug=false
 SaveBrowserLog=false
 ProfilesCaching=false
 MaxBrowserStartSimultaneously=1
-MinFreeMemoryToStartBrowser=20
+MinFreeMemoryToStartBrowser=50
 MinUnusedCpu=1
 IsMaximized=false
 Restart=false
@@ -209,7 +186,7 @@ CanvasNoise=""
 Audio="enable"
 QUIC="enable"
 AudioNoise=""
-MaxFPS=20
+MaxFPS=30
 Webrtc="enable"
 WebrtcIps=""
 Webgl="enable"
@@ -218,20 +195,13 @@ WebglRenderer=""
 WebglVendor=""
 Detector=false
 </SettingsWorker>
-     <ChromeCommandLine>--disable-gpu
---disable-d3d11
---disable-software-rasterizer
---disable-accelerated-video-decode
---disable-gpu-compositing
---disk-cache-size=10485760
---disable-features=OptimizationGuideModelDownloading,AutoDeElevate,Translate,MediaRouter,CalculateNativeWinOcclusion
+     <ChromeCommandLine>--disk-cache-size=10485760
+--disable-features=OptimizationGuideModelDownloading,AutoDeElevate,Translate,MediaRouter
 --lang=en
 --disable-auto-reload
---disable-background-networking
---disable-component-update
+--disable-gpu-vsync
 --renderer-process-limit=2
---autoplay-policy=no-user-gesture-required
---mute-audio</ChromeCommandLine>
+--autoplay-policy=no-user-gesture-required</ChromeCommandLine>
      <ModulesMetaJson>{
     "Archive": false,
     "FTP": false,
