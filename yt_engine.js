@@ -1,4 +1,4 @@
-﻿// yt_engine.js - Zero-CPU Ultra-Lightweight YouTube Player & Ad-Skipper (2026)
+﻿// yt_engine.js - Universal Anti-Bot Bypass, 144p Quality Lock & Ad-Skip Engine (2026)
 (function() {
     if (window.__YT_ZERO_CPU_ENGINE__) return;
     window.__YT_ZERO_CPU_ENGINE__ = true;
@@ -93,7 +93,6 @@
         } catch(err) {}
     }
 
-    // Interval 2 detik (2000ms) - sangat dingin untuk prosesor dual-core
     setInterval(runEngine, 2000);
     runEngine();
 })();
