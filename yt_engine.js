@@ -20,7 +20,7 @@
         }));
     } catch(e) {}
 
-    // 3. CSS Injeksi untuk menyembunyikan komentar & rekomendasi samping (menghemat 70% beban render CPU)
+    // 3. CSS Injeksi untuk menyembunyikan komentar & rekomendasi samping
     try {
         var style = document.createElement('style');
         style.id = 'yt-pro-light-css';
@@ -91,15 +91,12 @@
                 }
 
                 if (isAd) {
-                    // 1. Skip via API
                     if (typeof player.skipAd === 'function') { try { player.skipAd(); } catch(e) {} }
                     if (typeof player.cancelPlayback === 'function') { try { player.cancelPlayback(); } catch(e) {} }
 
-                    // 2. Klik tombol skip iklan secara instan
                     var skipBtn = player.querySelector('.ytp-skip-ad-button, .ytp-ad-skip-button, .ytp-ad-skip-button-modern, button.ytp-ad-skip-button-modern, button.ytp-skip-ad-button, .ytp-ad-skip-button-container button, .ytp-ad-skip-button-slot button, .videoAdUiSkipButton, [id^="skip-button:"] button, button[class*="skip-button"], button[class*="ytp-ad-skip"], .ytp-ad-overlay-close-button');
                     if (skipBtn) { clickEl(skipBtn); }
 
-                    // 3. Percepat iklan yang tidak bisa di-skip (unskippable) 16x
                     if (isFinite(v.duration) && v.duration > 0 && v.duration < 180) {
                         v.muted = true;
                         v.playbackRate = 16.0;
@@ -128,7 +125,7 @@
                         v.play().catch(function(){});
                     }
 
-                    // Tutup pop-up "Lanjutkan menonton"
+                    // Tutup pop-up konfirmasi
                     var confirmBtn = document.querySelector('yt-confirm-dialog-renderer #confirm-button button');
                     if (confirmBtn) { clickEl(confirmBtn); }
                 }
