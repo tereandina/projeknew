@@ -95,10 +95,10 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    section_start("Buka Video YouTube (Load URL)", 1001)!
    /*Dat:eyJ1dG8iOiIwIiwiZiI6W10sInVtIjoiMCIsInV0IjoiMCIsInMiOiJjdXN0b20iLCJ2IjoxLCJkIjpbeyJjbGFzcyI6InN0cmluZyIsImRhdGEiOiJCdWthIFZpZGVvIFlvdVR1YmUgKExvYWQgVVJMKSIsImlkIjoiQ29kZSIsInR5cGUiOiJjb25zdHIifV0sInV3IjoiMCJ9*/
    log_success("[Thread " + tNum + "] [START] Membuka URL: " + VAR_CURRENT_URL);
-   waiter_timeout_next(15000);
+   waiter_timeout_next(5000);
    waiter_nofail_next();
    load(VAR_CURRENT_URL)!
-   sleep(3000)!
+   sleep(2000)!
    log_success("[Thread " + tNum + "] [OK] Video YouTube Berhasil Dimuat & Berputar");
    section_end()!
 
@@ -122,9 +122,7 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
          scroll(0, scrollDelta)!
       }
 
-      if (VAR_ELAPSED % 10 === 0 || VAR_ELAPSED === VAR_TARGET_DUR) {
-         log("[Thread " + tNum + "] â±ï¸ Progres Tonton: " + VAR_ELAPSED + " / " + VAR_TARGET_DUR + " detik");
-      }
+      log("[Thread " + tNum + "] â±ï¸ Progres Tonton: " + VAR_ELAPSED + " / " + VAR_TARGET_DUR + " detik");
    }
    log_success("[Thread " + tNum + "] [DONE] Selesai menonton selama " + VAR_TARGET_DUR + " detik! (Target " + minD + "-" + maxD + "s terpenuhi)");
    section_end()!
