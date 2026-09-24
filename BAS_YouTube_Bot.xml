@@ -100,11 +100,13 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
    section_start("Buka Video YouTube (Load URL)", 1001)!
    /*Dat:eyJ1dG8iOiIwIiwiZiI6W10sInVtIjoiMCIsInV0IjoiMCIsInMiOiJjdXN0b20iLCJ2IjoxLCJkIjpbeyJjbGFzcyI6InN0cmluZyIsImRhdGEiOiJCdWthIFZpZGVvIFlvdVR1YmUgKExvYWQgVVJMKSIsImlkIjoiQ29kZSIsInR5cGUiOiJjb25zdHIifV0sInV3IjoiMCJ9*/
    log("[Thread " + tNum + "] ðŸŒ Membuka Video: " + VAR_CURRENT_URL);
-   waiter_timeout_next(12000);
-   waiter_nofail_next();
-   load(VAR_CURRENT_URL)!
+   try {
+      page().script("window.location.href = " + JSON.stringify(VAR_CURRENT_URL))!
+   } catch(e) {
+      load(VAR_CURRENT_URL)!
+   }
    sleep(2000)!
-   log_success("[Thread " + tNum + "] [OK] Video YouTube Berhasil Dimuat");
+   log_success("[Thread " + tNum + "] [OK] Video YouTube Sedang Dimuat & Berputar");
    section_end()!
 
    section_start("Menonton Video Sesuai Durasi Target", 1002)!
@@ -116,30 +118,19 @@ section(RESOURCE_1 /*{{threads}}*/, 100000 /*100000*/, 100000 /*100000*/, 0, fun
 
    VAR_ELAPSED = 0;
    while (VAR_ELAPSED < VAR_TARGET_DUR) {
-      sleep(2000)!
-      VAR_ELAPSED += 2;
+      var remaining = VAR_TARGET_DUR - VAR_ELAPSED;
+      var step = remaining >= 5 ? 5 : remaining;
 
-      // Ambil waktu tonton asli yang tercatat di browser jika ada
-      try {
-         page().script("return (function(){ return (typeof window.__YT_WATCHED_SECONDS__ !== 'undefined') ? window.__YT_WATCHED_SECONDS__ : -1; })()")!
-         var browserWatched = parseInt(_result());
-         if (!isNaN(browserWatched) && browserWatched > 0) {
-            VAR_ELAPSED = browserWatched;
-         }
-      } catch(e) {}
+      sleep(step * 1000)!
+      VAR_ELAPSED += step;
 
       // Emulasi scroll manusia secara halus
-      if (humanOpt && humanOpt.toString().indexOf("Aktif") >= 0 && (VAR_ELAPSED % 14 === 0)) {
+      if (humanOpt && humanOpt.toString().indexOf("Aktif") >= 0 && (VAR_ELAPSED % 15 === 0)) {
          var scrollDelta = Math.floor(Math.random() * 200) - 100;
          scroll(0, scrollDelta)!
       }
 
-      var displayElapsed = VAR_ELAPSED > VAR_TARGET_DUR ? VAR_TARGET_DUR : VAR_ELAPSED;
-      log("[Thread " + tNum + "] â±ï¸ Progres Tonton: " + displayElapsed + " / " + VAR_TARGET_DUR + " detik");
-
-      if (VAR_ELAPSED >= VAR_TARGET_DUR) {
-         break;
-      }
+      log("[Thread " + tNum + "] â±ï¸ Progres Tonton: " + VAR_ELAPSED + " / " + VAR_TARGET_DUR + " detik");
    }
    log_success("[Thread " + tNum + "] ðŸŽ‰ SELESAI! Durasi target " + VAR_TARGET_DUR + " detik tercapai.");
    section_end()!

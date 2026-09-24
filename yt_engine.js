@@ -2,9 +2,9 @@
 (function() {
     if (window.__YT_ENGINE_INITIALIZED__) return;
     window.__YT_ENGINE_INITIALIZED__ = true;
-    console.log("[YT Engine] Initialized - Auto-Play, 144p, Ad-Skip, Pop-up Blocker Active");
+    console.log("[YT Engine] Active - Auto-Play, 144p Quality Lock, Ad-Skip, Pop-up Blocker");
 
-    // 1. Cookies & Consent Bypass
+    // 1. Cookies & Consent
     try {
         document.cookie = "SOCS=CAESEwgDEgk0ODE3Nzk3MjQaAmVuIAEaBgiA_LyaBg; domain=.youtube.com; path=/; max-age=31536000";
         document.cookie = "CONSENT=PENDING+999; domain=.youtube.com; path=/; max-age=31536000";
@@ -20,7 +20,7 @@
         }));
     } catch(e) {}
 
-    // 3. Inject CSS to hide heavy distracting elements and popups
+    // 3. Inject CSS to hide heavy distracting elements & popups
     try {
         var style = document.createElement('style');
         style.id = 'yt-clean-ui-css';
@@ -58,7 +58,6 @@
         }
     }
 
-    // Helper: Cek apakah saat ini BENAR-BENAR ada iklan yang aktif
     function isRealAdActive(player) {
         if (!player) return false;
         if (player.classList.contains('ad-showing') || player.classList.contains('ad-interrupting')) {
@@ -73,20 +72,16 @@
 
     var qualityDone = false;
 
-    // Loop Cepat (250ms) untuk Skip Iklan & Handle Popups
+    // Loop Cepat (300ms) untuk Skip Iklan & Tutup Pop-up
     function fastLoop() {
         try {
-            // A. Tutup pop-up "YouTube Premium - No thanks / Batal / Dismiss"
-            var premiumDismiss = document.querySelectorAll('ytd-mealbar-promo-renderer #dismiss-button button, ytd-mealbar-promo-renderer button[aria-label*="No thanks" i], tp-yt-paper-dialog #dismiss-button button, ytd-button-renderer#dismiss-button button, button[aria-label*="No thanks" i], button[aria-label*="Tidak" i], button[aria-label*="Batal" i]');
-            for (var i = 0; i < premiumDismiss.length; i++) {
-                clickEl(premiumDismiss[i]);
+            // A. Tutup pop-up YouTube Premium & dialog consent
+            var popups = document.querySelectorAll('ytd-mealbar-promo-renderer #dismiss-button button, ytd-mealbar-promo-renderer button[aria-label*="No thanks" i], tp-yt-paper-dialog #dismiss-button button, ytd-button-renderer#dismiss-button button, button[aria-label*="No thanks" i], button[aria-label*="Tidak" i], button[aria-label*="Batal" i], button[aria-label*="Accept" i], button[aria-label*="Agree" i], button[aria-label*="Setuju" i], button[aria-label*="Terima" i]');
+            for (var i = 0; i < popups.length; i++) {
+                clickEl(popups[i]);
             }
 
-            // B. Tutup dialog persetujuan Google / consent
-            var consentBtn = document.querySelector('button[aria-label*="Accept" i], button[aria-label*="Agree" i], button[aria-label*="Setuju" i], button[aria-label*="Terima" i], form[action*="consent"] button');
-            if (consentBtn) { clickEl(consentBtn); }
-
-            // C. Handle YouTube Player & Video
+            // B. Handle Video & Skip Iklan
             var player = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
             var v = player ? player.querySelector('video') : document.querySelector('video');
 
@@ -107,12 +102,11 @@
                     v.muted = true;
                     v.playbackRate = 8.0;
                 } else {
-                    // VIDEO UTAMA - JALANKAN NORMAL 1.0x SPEED
+                    // Video Utama - Normal 1.0x
                     if (v.playbackRate !== 1.0) {
                         v.playbackRate = 1.0;
                     }
 
-                    // Auto Play jika terhenti
                     var bigPlay = player.querySelector('button.ytp-large-play-button');
                     if (bigPlay && (bigPlay.offsetWidth > 0 || bigPlay.offsetHeight > 0)) {
                         clickEl(bigPlay);
@@ -126,13 +120,10 @@
         } catch(e) {}
     }
 
-    // Loop Normal (1000ms) untuk Kunci 144p & Hitung Waktu Tonton Nyata
-    window.__YT_WATCHED_SECONDS__ = 0;
+    // Loop Normal (1000ms) untuk Kunci Resolusi 144p
     function normalLoop() {
         try {
             var player = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
-            var v = player ? player.querySelector('video') : document.querySelector('video');
-
             if (player && !qualityDone) {
                 try {
                     if (typeof player.setPlaybackQualityRange === 'function') {
@@ -144,14 +135,10 @@
                     }
                 } catch(q) {}
             }
-
-            if (player && v && !v.paused && !isRealAdActive(player) && v.readyState >= 2) {
-                window.__YT_WATCHED_SECONDS__ += 1;
-            }
         } catch(e) {}
     }
 
-    setInterval(fastLoop, 250);
+    setInterval(fastLoop, 300);
     setInterval(normalLoop, 1000);
     fastLoop();
     normalLoop();
